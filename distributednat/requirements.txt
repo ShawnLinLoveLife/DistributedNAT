@@ -1,0 +1,4 @@
+gevent
+flask
+sqlalchemy
+requests
