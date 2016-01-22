@@ -163,8 +163,8 @@ def set_snat(flow, newip, newport, flowid, switchid, method='PUT'):
     url = OF_URL % (switchid, flowid)
     data = SNAT_FLOW % args
     LOG.info('REQUEST SNAT - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
-    #resp = REQUESTS_FUNC.get(method)(url, data=data)
-    #LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
+    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'))
+    LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
 
 
 def set_dnat(flow, newip, newport, flowid, switchid, switch_port, method='PUT'):
@@ -181,8 +181,8 @@ def set_dnat(flow, newip, newport, flowid, switchid, switch_port, method='PUT'):
     url = OF_URL % (switchid, flowid)
     data = DNAT_FLOW % args
     LOG.info('REQUEST DNAT - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
-    #resp = REQUESTS_FUNC.get(method)(url, data=data)
-    #LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
+    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'))
+    LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
 
 
 def set_route(flow, outport, flowid, switchid, method='PUT'):
@@ -197,5 +197,5 @@ def set_route(flow, outport, flowid, switchid, method='PUT'):
     url = OF_URL % (switchid, flowid)
     data = ROUTE_FLOW % args
     LOG.info('REQUEST ROUTE - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
-    #resp = REQUESTS_FUNC.get(method)(url, data=data)
-    #LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
+    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'))
+    LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))

@@ -38,13 +38,10 @@ def alloc_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port):
     handler = DBHandler()
     if src_port == 0:
         return
-    print src_ip
     nat_rule = handler.get(int_ip=src_ip)
-    print nat_rule
     if nat_rule:
         eip = nat_rule[0].get('ext_ip')
         for port in range(1, 65536):
-            print used_ports
             if port not in used_ports.get(eip).keys():
                 #get unused flow ID
                 for flowid in range(0, 999):
@@ -92,10 +89,10 @@ def parse_packet_in_params():
     '''
     src_ip = flask.request.args.get('srcIp')
     src_port = flask.request.args.get('srcPort')
-    src_port = int(src_port, 16)
+    src_port = int(str(src_port), 16)
     dst_ip = flask.request.args.get('dstIp')
     dst_port = flask.request.args.get('dstPort')
-    dst_port = int(dst_port, 16)
+    dst_port = int(str(dst_port), 16)
     switch = flask.request.args.get('switchId')
     switch_port = flask.request.args.get('switchPort')
     return src_ip, src_port, dst_ip, dst_port, switch, switch_port
