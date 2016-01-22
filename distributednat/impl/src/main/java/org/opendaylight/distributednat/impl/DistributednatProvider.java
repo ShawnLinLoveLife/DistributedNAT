@@ -24,6 +24,13 @@ import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+
 public class DistributednatProvider implements BindingAwareProvider, AutoCloseable, Ipv4PacketListener/*, PacketProcessingListener*/ {
 
     private static final Logger LOG = LoggerFactory.getLogger(DistributednatProvider.class);
@@ -66,6 +73,63 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         return Integer.toHexString(0xFF & b);
     }
 
+    public static String doGet(String srcIp, String dstIp, String srcTcpPort, String dstTcpPort, String switchId, String switchPort) throws Exception {
+        StringBuffer sb = new StringBuffer("http://localhost:6666/temporary_eip_port?");
+        sb.append("srcIp=" + srcIp + "&");
+        sb.append("dstIp=" + dstIp + "&");
+        sb.append("srcPort=" + srcTcpPort + "&");
+        sb.append("dstPort=" + dstTcpPort + "&");
+        sb.append("switchId=" + switchId + "&");
+        sb.append("switchPort=" + switchPort);
+
+        String finalUrl = sb.toString();
+        LOG.info("final url is " + finalUrl);
+        URL localURL = new URL(finalUrl);
+        URLConnection connection = localURL.openConnection();
+        HttpURLConnection httpURLConnection = (HttpURLConnection)connection;
+
+        httpURLConnection.setRequestMethod("GET");
+        //httpURLConnection.setRequestProperty("accept", "application/json");
+        httpURLConnection.setRequestProperty("Content-Type", "application/json");
+
+        InputStream inputStream = null;
+        InputStreamReader inputStreamReader = null;
+        BufferedReader reader = null;
+        StringBuffer resultBuffer = new StringBuffer();
+        String tempLine = null;
+
+        if (httpURLConnection.getResponseCode() >= 300) {
+            throw new Exception("HTTP Request is not success, Response code is " + httpURLConnection.getResponseCode());
+        }
+
+        try {
+            inputStream = httpURLConnection.getInputStream();
+            inputStreamReader = new InputStreamReader(inputStream);
+            reader = new BufferedReader(inputStreamReader);
+
+            while ((tempLine = reader.readLine()) != null) {
+                resultBuffer.append(tempLine);
+            }
+
+        } finally {
+
+            if (reader != null) {
+                reader.close();
+            }
+
+            if (inputStreamReader != null) {
+                inputStreamReader.close();
+            }
+
+            if (inputStream != null) {
+                inputStream.close();
+            }
+
+        }
+
+        return resultBuffer.toString();
+    }
+
     @Override
     public void onIpv4PacketReceived(Ipv4PacketReceived packetReceived) {
         LOG.info("on Ipv4PacketReceived");
@@ -88,33 +152,63 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         if(rawPacket == null || ethernetPacket == null || ipv4Packet == null) {
             return;
         }
-        //LOG.info(rawPacket.getIngress().toString());
-        //LOG.info(rawPacket.toString());
+
         byte[] raw_data = packetReceived.getPayload();
         String raw_data_string = bytesToHexString(raw_data);
-        LOG.info("PacketRawData:"+raw_data_string);
+        //LOG.info("PacketRawData:"+raw_data_string);
         InstanceIdentifier iid = rawPacket.getIngress().getValue();
+        LOG.info("--------------------------------------------------------");
         LOG.info("SourceIP:"+ipv4Packet.getSourceIpv4().getValue());
         LOG.info("DstIP:"+ipv4Packet.getDestinationIpv4().getValue());
         //LOG.info(iid.toString());
 
+        String iid_string = iid.toString();
+        //String switch_id_string = ;
+        //String switch_in_packet_port_string = ;
         String verifyIp = bytesToHexStringFromBeginToEnd(raw_data, 12, 13);
         String verifyTCP = bytesToHexStringFromBeginToEnd(raw_data, 23, 23);
-        String srcIp = bytesToHexStringFromBeginToEnd(raw_data, 26, 29);
-        String dstIp = bytesToHexStringFromBeginToEnd(raw_data, 30, 33);
+        String srcIp = ipv4Packet.getSourceIpv4().getValue();//bytesToHexStringFromBeginToEnd(raw_data, 26, 29);
+        String dstIp = ipv4Packet.getDestinationIpv4().getValue();//bytesToHexStringFromBeginToEnd(raw_data, 30, 33);
         String srcPort = bytesToHexStringFromBeginToEnd(raw_data, 34, 35);
         String dstPort = bytesToHexStringFromBeginToEnd(raw_data, 36, 37);
+        String switchId = null;
+        String switchPort = null;
         LOG.info("verifyIp###" + verifyIp);
         LOG.info("verifyTCP###" + verifyTCP);
         LOG.info("srcIp###" + srcIp);
         LOG.info("dstIp###" + dstIp);
         LOG.info("srcPort###" + srcPort);
         LOG.info("dstPort###" + dstPort);
-        //if(!IPV4_IP_TO_IGNORE.equals(ipv4Packet.getSourceIpv4().getValue())) {
-        //    addressObservationWriter.addAddress(ethernetPacket.getSourceMac(),
-        //            new IpAddress(ipv4Packet.getSourceIpv4().getValue().toCharArray()),
-        //            rawPacket.getIngress());
-        //}
+
+        if (verifyIp.equals("0800") && verifyTCP.equals("06")) {
+            LOG.info("receive a tpc packet");
+            LOG.info(iid.toString());
+            char[] charIId = iid_string.toCharArray();
+            int switchIdIndex = iid_string.indexOf("openflow");
+            int switchPortIndex = iid_string.lastIndexOf("openflow");
+            switchId = String.valueOf(charIId[switchIdIndex+9]);
+            switchPort = String.valueOf(charIId[switchPortIndex+11]);
+            LOG.info("switchId###" + switchId);
+            LOG.info("siwtchPort###" + switchPort);
+            /*try {
+                //GetRequest request = Unirest.get(String url);
+                HttpResponse<JsonNode> jsonResponse = Unirest.post("localhost:6666/temporary_eip_port")
+                        .header("accept", "application/json")
+                        .queryString("apiKey", "123")
+                        .field("foo", "bar")
+                        .asJson();
+            } catch (Exception e) {
+                LOG.info("Send message failed");
+            }*/
+            try {
+                //doGet(String srcIp, String dstIp, String srcTcpPort, String dstTcpPort, String switchId, String switchPort)
+                LOG.info(doGet(srcIp, dstIp, srcPort, dstPort, switchId, switchPort));
+            } catch (Exception e) {
+                LOG.info("I could not get anything");
+            }
+        }
+        LOG.info("--------------------------------------------------------");
+
     }
     @Override
     public void onSessionInitiated(ProviderContext session) {

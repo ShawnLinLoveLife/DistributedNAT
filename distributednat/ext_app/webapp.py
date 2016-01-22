@@ -92,10 +92,10 @@ def parse_packet_in_params():
     '''
     src_ip = flask.request.args.get('srcIp')
     src_port = flask.request.args.get('srcPort')
-    src_port = int(src_port, 16)
+    src_port = int(src_port.decode('utf-8'), 16)
     dst_ip = flask.request.args.get('dstIp')
     dst_port = flask.request.args.get('dstPort')
-    dst_port = int(dst_port, 16)
+    dst_port = int(dst_port.decode('utf-8'), 16)
     switch = flask.request.args.get('switchId')
     switch_port = flask.request.args.get('switchPort')
     return src_ip, src_port, dst_ip, dst_port, switch, switch_port

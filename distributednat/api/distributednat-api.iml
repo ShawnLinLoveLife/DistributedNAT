@@ -30,7 +30,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/concepts/0.9.0-SNAPSHOT/concepts-0.9.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/concepts/1.0.0-SNAPSHOT/concepts-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -39,7 +39,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/util/0.9.0-SNAPSHOT/util-0.9.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/util/1.0.0-SNAPSHOT/util-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -84,7 +84,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/yang-common/0.9.0-SNAPSHOT/yang-common-0.9.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/yang-common/1.0.0-SNAPSHOT/yang-common-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
@@ -93,7 +93,7 @@
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/object-cache-api/0.9.0-SNAPSHOT/object-cache-api-0.9.0-SNAPSHOT.jar!/" />
+          <root url="jar://$MAVEN_REPOSITORY$/org/opendaylight/yangtools/object-cache-api/1.0.0-SNAPSHOT/object-cache-api-1.0.0-SNAPSHOT.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
