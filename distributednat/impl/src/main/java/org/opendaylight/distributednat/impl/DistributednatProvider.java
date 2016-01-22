@@ -50,6 +50,22 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         return sb.toString();
     }
 
+    public static final String bytesToHexStringFromBeginToEnd(byte[] bArray, int begin, int end) {
+        StringBuffer sb = new StringBuffer(bArray.length);
+        String sTemp;
+        for (int i = begin; i <= end; i++) {
+            sTemp = Integer.toHexString(0xFF & bArray[i]);
+            if (sTemp.length() < 2)
+                sb.append(0);
+            sb.append(sTemp.toUpperCase());
+        }
+        return sb.toString();
+    }
+
+    public static final String byteToHexString(byte b) {
+        return Integer.toHexString(0xFF & b);
+    }
+
     @Override
     public void onIpv4PacketReceived(Ipv4PacketReceived packetReceived) {
         LOG.info("on Ipv4PacketReceived");
@@ -82,6 +98,18 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         LOG.info("DstIP:"+ipv4Packet.getDestinationIpv4().getValue());
         //LOG.info(iid.toString());
 
+        String verifyIp = bytesToHexStringFromBeginToEnd(raw_data, 12, 13);
+        String verifyTCP = bytesToHexStringFromBeginToEnd(raw_data, 23, 23);
+        String srcIp = bytesToHexStringFromBeginToEnd(raw_data, 26, 29);
+        String dstIp = bytesToHexStringFromBeginToEnd(raw_data, 30, 33);
+        String srcPort = bytesToHexStringFromBeginToEnd(raw_data, 34, 37);
+        String dstPort = bytesToHexStringFromBeginToEnd(raw_data, 38, 41);
+        LOG.info("verifyIp###" + verifyIp);
+        LOG.info("verifyTCP###" + verifyTCP);
+        LOG.info("srcIp###" + srcIp);
+        LOG.info("dstIp###" + dstIp);
+        LOG.info("srcPort###" + srcPort);
+        LOG.info("dstPort###" + dstPort);
         //if(!IPV4_IP_TO_IGNORE.equals(ipv4Packet.getSourceIpv4().getValue())) {
         //    addressObservationWriter.addAddress(ethernetPacket.getSourceMac(),
         //            new IpAddress(ipv4Packet.getSourceIpv4().getValue().toCharArray()),
