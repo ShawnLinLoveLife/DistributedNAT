@@ -21,8 +21,8 @@ SNAT_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
       <ip-protocol>6</ip-protocol>
       <ip-proto>ipv4</ip-proto>
     </ip-match>
-    <tcp-source-port>%(srcport)d</tcp-source-port>
-    <tcp-destination-port>%(dstport)d</tcp-destination-port>
+    <tcp-source-port>%(srcport)s</tcp-source-port>
+    <tcp-destination-port>%(dstport)s</tcp-destination-port>
   </match>
   <id>%(flowid)d</id>
   <table_id>0</table_id>
@@ -40,7 +40,7 @@ SNAT_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <action>
           <order>1</order>
           <set-tp-src-action>
-            <port>%(newport)d</port>
+            <port>%(newport)s</port>
           </set-tp-src-action>
         </action>
         <action>
@@ -72,8 +72,8 @@ DNAT_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
       <ip-protocol>6</ip-protocol>
       <ip-proto>ipv4</ip-proto>
     </ip-match>
-    <tcp-source-port>%(srcport)d</tcp-source-port>
-    <tcp-destination-port>%(dstport)d</tcp-destination-port>
+    <tcp-source-port>%(srcport)s</tcp-source-port>
+    <tcp-destination-port>%(dstport)s</tcp-destination-port>
   </match>
   <id>%(flowid)d</id>
   <table_id>0</table_id>
@@ -91,13 +91,13 @@ DNAT_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <action>
           <order>1</order>
           <set-tp-dst-action>
-            <port>%(newport)d</port>
+            <port>%(newport)s</port>
           </set-tp-dst-action>
         </action>
         <action>
           <order>2</order>
           <output-action>
-            <output-node-connector>1</output-node-connector>
+            <output-node-connector>%(switch_port)s</output-node-connector>
             <max-length>65535</max-length>
           </output-action>
         </action>
@@ -119,8 +119,8 @@ ROUTE_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
     </ethernet-match>
     <ipv4-source>%(srcip)s/32</ipv4-destination>
     <ipv4-destination>%(dstip)s/32</ipv4-destination>
-    <tcp-source-port>%(srcport)d</tcp-source-port>
-    <tcp-destination-port>%(dstport)d</tcp-destination-port>
+    <tcp-source-port>%(srcport)s</tcp-source-port>
+    <tcp-destination-port>%(dstport)s</tcp-destination-port>
   </match>
   <id>%(flowid)d</id>
   <table_id>0</table_id>
@@ -132,7 +132,7 @@ ROUTE_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <action>
           <order>0</order>
           <output-action>
-            <output-node-connector>%(outport)d</output-node-connector>
+            <output-node-connector>%(outport)s</output-node-connector>
             <max-length>65535</max-length>
           </output-action>
         </action>
@@ -143,7 +143,7 @@ ROUTE_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 '''
 
 
-OF_URL = u'http://localhost:8181/restconf/config/opendaylight-inventory:nodes/node/openflow:%d/table/0/flow/%d'
+OF_URL = u'http://localhost:8181/restconf/config/opendaylight-inventory:nodes/node/openflow:%s/table/0/flow/%d'
 
 REQUESTS_FUNC = {'PUT': requests.put,
                  'POST': requests.post,
@@ -167,7 +167,7 @@ def set_snat(flow, newip, newport, flowid, switchid, method='PUT'):
     #LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
 
 
-def set_dnat(flow, newip, newport, flowid, switchid, method='PUT'):
+def set_dnat(flow, newip, newport, flowid, switchid, switch_port, method='PUT'):
     args = {
         'srcip': flow[0],
         'srcport': flow[1],
@@ -175,6 +175,7 @@ def set_dnat(flow, newip, newport, flowid, switchid, method='PUT'):
         'dstport': flow[3],
         'newip': newip,
         'newport': newport,
+        'switch_port': switch_port,
         'flowid': flowid
     }
     url = OF_URL % (switchid, flowid)

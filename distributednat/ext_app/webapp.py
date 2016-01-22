@@ -27,11 +27,11 @@ used_ports records used ports and the nat ip:ports as:
 """
 used_ports = dict([(rule['ext_ip'], {}) for rule in DBHandler().get()])
 used_flowid = []
-logger = get_logger()
+LOG = get_logger()
 GWID = get_config().getint('default', 'gw_switch_id')
 
 
-def alloc_port(src_ip, src_port, dst_ip, dst_port, switch):
+def alloc_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port):
     """
     Allocate a temporary EIP:port for this flow
     """
@@ -59,14 +59,14 @@ def alloc_port(src_ip, src_port, dst_ip, dst_port, switch):
                 of_handler.set_snat(egress_flow, eip, port, 1000 + flowid, switch)
                 #set DNAT flow
                 ingress_flow = [dst_ip, dst_port, eip, src_port]
-                of_handler.set_dnat(ingress_flow, src_ip, src_port, 2000 + flowid, switch)
+                of_handler.set_dnat(ingress_flow, src_ip, src_port, 2000 + flowid, switch, switch_port)
                 #set ROUTE flow
-                of_handler.set_route(ingress_flow, switch + 1, flowid, GWID)
+                of_handler.set_route(ingress_flow, int(switch) + 1, flowid, GWID)
                 return json.dumps([eip, port])
     return 'ERROR'
 
 
-def expire_port(src_ip, src_port, dst_ip, dst_port, switch):
+def expire_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port):
     """
     Expire a temporary EIP:port for this flow
     """
@@ -90,16 +90,16 @@ def handle_temporary_eip_port_request():
     """
     Generate/Delete temporary EIP:port for specified src_ip:src_port
     """
-    data = flask.request.json
-    src_ip = data.get('src_ip')
-    src_port = data.get('src_port')
-    dst_ip = data.get('dst_ip')
-    dst_port = data.get('dst_port')
-    switch = data.get('switch')
+    src_ip = flask.request.args.get('srcIp')
+    src_port = flask.request.args.get('srcPort')
+    dst_ip = flask.request.args.get('dstIp')
+    dst_port = flask.request.args.get('dstPort')
+    switch = flask.request.args.get('switchId')
+    switch_port = flask.request.args.get('switchPort')
     if flask.request.method == 'GET':
-        return alloc_port(src_ip, src_port, dst_ip, dst_port, switch)
+        return alloc_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port)
     if flask.request.method == 'GET':
-        return expire_port(src_ip, src_port, dst_ip, dst_port, switch)
+        return expire_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port)
 
 
 def bind_eip(bindings):
@@ -167,7 +167,7 @@ def create_app():
     @app.before_request
     def log_request():
         """ log the request args and body, for tracing """
-        logger.info('URL: %s, BODY: %s' % (flask.request.url, flask.request.data))
+        LOG.info('URL: %s, BODY: %s' % (flask.request.url, flask.request.data))
 
     return app
 
