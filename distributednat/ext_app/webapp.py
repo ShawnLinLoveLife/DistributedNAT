@@ -55,7 +55,7 @@ def alloc_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port):
                 egress_flow = [src_ip, src_port, dst_ip, dst_port]
                 of_handler.set_snat(egress_flow, eip, port, 1000 + flowid, switch)
                 #set DNAT flow
-                ingress_flow = [dst_ip, dst_port, eip, src_port]
+                ingress_flow = [dst_ip, dst_port, eip, port]
                 of_handler.set_dnat(ingress_flow, src_ip, src_port, 2000 + flowid, switch, switch_port)
                 #set ROUTE flow
                 of_handler.set_route(ingress_flow, int(switch) + 1, 3000 + flowid, GWID)

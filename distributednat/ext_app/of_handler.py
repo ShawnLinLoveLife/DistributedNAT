@@ -119,6 +119,10 @@ ROUTE_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
     </ethernet-match>
     <ipv4-source>%(srcip)s/32</ipv4-source>
     <ipv4-destination>%(dstip)s/32</ipv4-destination>
+    <ip-match>
+      <ip-protocol>6</ip-protocol>
+      <ip-proto>ipv4</ip-proto>
+    </ip-match>
     <tcp-source-port>%(srcport)s</tcp-source-port>
     <tcp-destination-port>%(dstport)s</tcp-destination-port>
   </match>
@@ -198,4 +202,4 @@ def set_route(flow, outport, flowid, switchid, method='PUT'):
     data = ROUTE_FLOW % args
     LOG.info('REQUEST ROUTE - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
     resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'), headers={'Content-Type':'application/xml', 'Accept': 'application/xml'})
-    LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
+    LOG.info('RESPONSE ROUTE - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
