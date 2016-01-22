@@ -7,6 +7,7 @@
  */
 package org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.distributednat.impl.rev141210;
 
+import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
 import org.opendaylight.distributednat.impl.DistributednatProvider;
 
 public class DistributednatModule extends org.opendaylight.yang.gen.v1.urn.opendaylight.params.xml.ns.yang.distributednat.impl.rev141210.AbstractDistributednatModule {
@@ -27,6 +28,9 @@ public class DistributednatModule extends org.opendaylight.yang.gen.v1.urn.opend
     public java.lang.AutoCloseable createInstance() {
         DistributednatProvider provider = new DistributednatProvider();
         getBrokerDependency().registerProvider(provider);
+        NotificationProviderService nps = getNotificationServiceDependency();
+        provider.getNotification(nps);
+        nps.registerNotificationListener(provider);
         return provider;
     }
 
