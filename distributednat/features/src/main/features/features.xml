@@ -27,6 +27,7 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version='0.3.0-SNAPSHOT'>odl-openflowplugin-southbound</feature>
     <feature version='0.3.0-SNAPSHOT'>odl-openflowplugin-flow-services</feature>
     <feature version='0.4.0-SNAPSHOT'>odl-l2switch-packethandler</feature>
+    <feature version='0.4.0-SNAPSHOT'>odl-l2switch-switch</feature>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-distributednat-api</feature>
     <bundle>mvn:org.opendaylight.distributednat/distributednat-impl/{{VERSION}}</bundle>

@@ -102,8 +102,8 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         String verifyTCP = bytesToHexStringFromBeginToEnd(raw_data, 23, 23);
         String srcIp = bytesToHexStringFromBeginToEnd(raw_data, 26, 29);
         String dstIp = bytesToHexStringFromBeginToEnd(raw_data, 30, 33);
-        String srcPort = bytesToHexStringFromBeginToEnd(raw_data, 34, 37);
-        String dstPort = bytesToHexStringFromBeginToEnd(raw_data, 38, 41);
+        String srcPort = bytesToHexStringFromBeginToEnd(raw_data, 34, 35);
+        String dstPort = bytesToHexStringFromBeginToEnd(raw_data, 36, 37);
         LOG.info("verifyIp###" + verifyIp);
         LOG.info("verifyTCP###" + verifyTCP);
         LOG.info("srcIp###" + srcIp);

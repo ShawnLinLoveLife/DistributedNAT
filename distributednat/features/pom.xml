@@ -129,6 +129,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <version>0.4.0-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.l2switch.loopremover</groupId>
+      <artifactId>loopremover-config</artifactId>
+      <type>xml</type>
+      <classifier>config</classifier>
+      <version>0.4.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>distributednat-api</artifactId>
       <version>${project.version}</version>
@@ -144,6 +151,30 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <artifactId>features-openflowjava</artifactId>
       <classifier>features</classifier>
       <type>xml</type>
+    </dependency>
+<!--    <dependency>
+      <groupId>org.opendaylight.l2switch.addresstracker</groupId>
+      <artifactId>addresstracker.aggregator</artifactId>
+      <version>0.4.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.l2switch.arphandler</groupId>
+      <artifactId>arphandler.aggregator</artifactId>
+      <version>0.4.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opendaylight.l2switch.hosttracker</groupId>
+      <artifactId>hosttracker.aggregator</artifactId>
+      <version>0.4.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId></groupId>
+      <artifactId></artifactId>
+    </dependency>-->
+    <dependency>
+      <groupId>org.opendaylight.l2switch</groupId>
+      <artifactId>features-l2switch</artifactId>
+      <version>0.4.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>
