@@ -86,16 +86,25 @@ def expire_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port):
     return 'OK'
 
 
+def parse_packet_in_params():
+    '''
+    get params of request body
+    '''
+    src_ip = flask.request.args.get('srcIp')
+    src_port = flask.request.args.get('srcPort')
+    src_port = int(src_port, 16)
+    dst_ip = flask.request.args.get('dstIp')
+    dst_port = flask.request.args.get('dstPort')
+    dst_port = int(dst_port, 16)
+    switch = flask.request.args.get('switchId')
+    switch_port = flask.request.args.get('switchPort')
+    return src_ip, src_port, dst_ip, dst_port, switch, switch_port
+
 def handle_temporary_eip_port_request():
     """
     Generate/Delete temporary EIP:port for specified src_ip:src_port
     """
-    src_ip = flask.request.args.get('srcIp')
-    src_port = flask.request.args.get('srcPort')
-    dst_ip = flask.request.args.get('dstIp')
-    dst_port = flask.request.args.get('dstPort')
-    switch = flask.request.args.get('switchId')
-    switch_port = flask.request.args.get('switchPort')
+    src_ip, src_port, dst_ip, dst_port, switch, switch_port = parse_packet_in_params()
     if flask.request.method == 'GET':
         return alloc_port(src_ip, src_port, dst_ip, dst_port, switch, switch_port)
     if flask.request.method == 'GET':
