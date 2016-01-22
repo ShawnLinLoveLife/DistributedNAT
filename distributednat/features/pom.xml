@@ -122,6 +122,13 @@ and is available at http://www.eclipse.org/legal/epl-v10.html INTERNAL
       <classifier>config</classifier>
     </dependency>
     <dependency>
+      <groupId>org.opendaylight.l2switch.packethandler</groupId>
+      <artifactId>packethandler-config</artifactId>
+      <type>xml</type>
+      <classifier>config</classifier>
+      <version>0.4.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>distributednat-api</artifactId>
       <version>${project.version}</version>
