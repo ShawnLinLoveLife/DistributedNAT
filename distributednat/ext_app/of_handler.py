@@ -66,7 +66,7 @@ DNAT_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <type>2048</type>
       </ethernet-type>
     </ethernet-match>
-    <ipv4-source>%(srcip)s/32</ipv4-destination>
+    <ipv4-source>%(srcip)s/32</ipv4-source>
     <ipv4-destination>%(dstip)s/32</ipv4-destination>
     <ip-match>
       <ip-protocol>6</ip-protocol>
@@ -117,7 +117,7 @@ ROUTE_FLOW = u'''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <type>2048</type>
       </ethernet-type>
     </ethernet-match>
-    <ipv4-source>%(srcip)s/32</ipv4-destination>
+    <ipv4-source>%(srcip)s/32</ipv4-source>
     <ipv4-destination>%(dstip)s/32</ipv4-destination>
     <tcp-source-port>%(srcport)s</tcp-source-port>
     <tcp-destination-port>%(dstport)s</tcp-destination-port>
@@ -163,7 +163,7 @@ def set_snat(flow, newip, newport, flowid, switchid, method='PUT'):
     url = OF_URL % (switchid, flowid)
     data = SNAT_FLOW % args
     LOG.info('REQUEST SNAT - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
-    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'))
+    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'), headers={'Content-Type':'application/xml', 'Accept': 'application/xml'})
     LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
 
 
@@ -181,7 +181,7 @@ def set_dnat(flow, newip, newport, flowid, switchid, switch_port, method='PUT'):
     url = OF_URL % (switchid, flowid)
     data = DNAT_FLOW % args
     LOG.info('REQUEST DNAT - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
-    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'))
+    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'), headers={'Content-Type':'application/xml', 'Accept': 'application/xml'})
     LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
 
 
@@ -197,5 +197,5 @@ def set_route(flow, outport, flowid, switchid, method='PUT'):
     url = OF_URL % (switchid, flowid)
     data = ROUTE_FLOW % args
     LOG.info('REQUEST ROUTE - METHOD: %s, URL: %s, DATA: %s' % (method, url, data))
-    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'))
+    resp = REQUESTS_FUNC.get(method)(url, data=data, auth=('admin', 'admin'), headers={'Content-Type':'application/xml', 'Accept': 'application/xml'})
     LOG.info('RESPONSE SNAT - STATUS: %d, TEXT: %s' % (resp.status_code, resp.text))
