@@ -15,11 +15,14 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
   <repository>mvn:org.opendaylight.mdsal.model/features-mdsal-model/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.netconf/features-restconf/{{VERSION}}/xml/features</repository>
   <repository>mvn:org.opendaylight.dlux/features-dlux/{{VERSION}}/xml/features</repository>
+  <repository>mvn:org.opendaylight.openflowplugin/features-openflowplugin/0.3.0-SNAPSHOT/xml/features</repository>
   <feature name='odl-distributednat-api' version='${project.version}' description='OpenDaylight :: distributednat :: api'>
     <feature version='${mdsal.model.version}'>odl-mdsal-models</feature>
     <bundle>mvn:org.opendaylight.distributednat/distributednat-api/{{VERSION}}</bundle>
   </feature>
   <feature name='odl-distributednat' version='${project.version}' description='OpenDaylight :: distributednat'>
+    <feature version='0.3.0-SNAPSHOT'>odl-openflowplugin-southbound</feature>
+    <feature version='0.3.0-SNAPSHOT'>odl-openflowplugin-flow-services</feature>
     <feature version='${mdsal.version}'>odl-mdsal-broker</feature>
     <feature version='${project.version}'>odl-distributednat-api</feature>
     <bundle>mvn:org.opendaylight.distributednat/distributednat-impl/{{VERSION}}</bundle>
@@ -35,5 +38,4 @@ and is available at http://www.eclipse.org/legal/epl-v10.html
     <feature version="${mdsal.version}">odl-mdsal-xsql</feature>
     <feature version="${dlux.version}">odl-dlux-yangui</feature>
   </feature>
-
 </features>
