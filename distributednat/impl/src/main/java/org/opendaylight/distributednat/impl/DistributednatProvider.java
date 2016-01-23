@@ -7,19 +7,15 @@
  */
 package org.opendaylight.distributednat.impl;
 
-import org.opendaylight.controller.md.sal.binding.api.ReadOnlyTransaction;
 import org.opendaylight.controller.sal.binding.api.BindingAwareBroker.ProviderContext;
 import org.opendaylight.controller.sal.binding.api.BindingAwareProvider;
 import org.opendaylight.controller.sal.binding.api.NotificationProviderService;
-import org.opendaylight.yang.gen.v1.urn.ietf.params.xml.ns.yang.ietf.inet.types.rev100924.IpAddress;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.basepacket.rev140528.packet.chain.grp.PacketChain;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.basepacket.rev140528.packet.chain.grp.packet.chain.packet.RawPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.ethernet.rev140528.ethernet.packet.received.packet.chain.packet.EthernetPacket;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.ipv4.rev140528.Ipv4PacketListener;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.ipv4.rev140528.Ipv4PacketReceived;
 import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.ipv4.rev140528.ipv4.packet.received.packet.chain.packet.Ipv4Packet;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketProcessingListener;
-import org.opendaylight.yang.gen.v1.urn.opendaylight.packet.service.rev130709.PacketReceived;
 import org.opendaylight.yangtools.yang.binding.InstanceIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,23 +34,6 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
 
     public void getNotification(NotificationProviderService nps) {
         this.nps = nps;
-    }
-
-/*    @Override
-    public void onPacketReceived(PacketReceived packetReceived) {
-        LOG.info("I received a packet");
-    }*/
-
-    public static final String bytesToHexString(byte[] bArray) {
-        StringBuffer sb = new StringBuffer(bArray.length);
-        String sTemp;
-        for (int i = 0; i < bArray.length; i++) {
-            sTemp = Integer.toHexString(0xFF & bArray[i]);
-            if (sTemp.length() < 2)
-                sb.append(0);
-            sb.append(sTemp.toUpperCase());
-        }
-        return sb.toString();
     }
 
     public static final String bytesToHexStringFromBeginToEnd(byte[] bArray, int begin, int end) {
@@ -89,7 +68,6 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         HttpURLConnection httpURLConnection = (HttpURLConnection)connection;
 
         httpURLConnection.setRequestMethod("GET");
-        //httpURLConnection.setRequestProperty("accept", "application/json");
         httpURLConnection.setRequestProperty("Content-Type", "application/json");
 
         InputStream inputStream = null;
@@ -154,17 +132,10 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         }
 
         byte[] raw_data = packetReceived.getPayload();
-        String raw_data_string = bytesToHexString(raw_data);
-        //LOG.info("PacketRawData:"+raw_data_string);
+        String raw_data_string = bytesToHexStringFromBeginToEnd(raw_data, 0, raw_data.length-1);
         InstanceIdentifier iid = rawPacket.getIngress().getValue();
-        LOG.info("--------------------------------------------------------");
-        LOG.info("SourceIP:"+ipv4Packet.getSourceIpv4().getValue());
-        LOG.info("DstIP:"+ipv4Packet.getDestinationIpv4().getValue());
-        //LOG.info(iid.toString());
 
         String iid_string = iid.toString();
-        //String switch_id_string = ;
-        //String switch_in_packet_port_string = ;
         String verifyIp = bytesToHexStringFromBeginToEnd(raw_data, 12, 13);
         String verifyTCP = bytesToHexStringFromBeginToEnd(raw_data, 23, 23);
         String srcIp = ipv4Packet.getSourceIpv4().getValue();//bytesToHexStringFromBeginToEnd(raw_data, 26, 29);
@@ -173,43 +144,36 @@ public class DistributednatProvider implements BindingAwareProvider, AutoCloseab
         String dstPort = bytesToHexStringFromBeginToEnd(raw_data, 36, 37);
         String switchId = null;
         String switchPort = null;
-        LOG.info("verifyIp###" + verifyIp);
-        LOG.info("verifyTCP###" + verifyTCP);
-        LOG.info("srcIp###" + srcIp);
-        LOG.info("dstIp###" + dstIp);
-        LOG.info("srcPort###" + srcPort);
-        LOG.info("dstPort###" + dstPort);
+        LOG.info("----------");
+        LOG.info("SourceIP: "+ipv4Packet.getSourceIpv4().getValue());
+        LOG.info("DstIP: "+ipv4Packet.getDestinationIpv4().getValue());
+        LOG.info("verifyIp:" + verifyIp);
+        LOG.info("verifyTCP: " + verifyTCP);
+        LOG.info("srcIp: " + srcIp);
+        LOG.info("dstIp: " + dstIp);
+        LOG.info("srcPort: " + srcPort);
+        LOG.info("dstPort: " + dstPort);
 
         if (verifyIp.equals("0800") && verifyTCP.equals("06")) {
-            LOG.info("receive a tpc packet");
+            LOG.info("Receive a TCP packet");
             LOG.info(iid.toString());
             char[] charIId = iid_string.toCharArray();
             int switchIdIndex = iid_string.indexOf("openflow");
             int switchPortIndex = iid_string.lastIndexOf("openflow");
-            switchId = String.valueOf(charIId[switchIdIndex+9]);
-            switchPort = String.valueOf(charIId[switchPortIndex+11]);
-            LOG.info("switchId###" + switchId);
-            LOG.info("siwtchPort###" + switchPort);
-            /*try {
-                //GetRequest request = Unirest.get(String url);
-                HttpResponse<JsonNode> jsonResponse = Unirest.post("localhost:6666/temporary_eip_port")
-                        .header("accept", "application/json")
-                        .queryString("apiKey", "123")
-                        .field("foo", "bar")
-                        .asJson();
-            } catch (Exception e) {
-                LOG.info("Send message failed");
-            }*/
+            switchId = String.valueOf(charIId[switchIdIndex + 9]);
+            switchPort = String.valueOf(charIId[switchPortIndex + 11]);
+            LOG.info("switchId: " + switchId);
+            LOG.info("siwtchPort: " + switchPort);
             try {
                 //doGet(String srcIp, String dstIp, String srcTcpPort, String dstTcpPort, String switchId, String switchPort)
                 LOG.info(doGet(srcIp, dstIp, srcPort, dstPort, switchId, switchPort));
             } catch (Exception e) {
-                LOG.info("I could not get anything");
+                LOG.info(e.toString());
             }
         }
-        LOG.info("--------------------------------------------------------");
-
+        LOG.info("----------");
     }
+
     @Override
     public void onSessionInitiated(ProviderContext session) {
         LOG.info("DistributednatProvider Session Initiated");
